@@ -14,11 +14,9 @@ async function sendMessage() {
     
     if (!userMessage) return;
     
-    // عرض رسالة المستخدم
     addMessage(userMessage, 'user');
     inputField.value = '';
     
-    // عرض مؤشر الكتابة
     const typingDiv = addTypingIndicator();
     
     try {
@@ -27,25 +25,25 @@ async function sendMessage() {
         addMessage(response, 'bot');
     } catch (error) {
         removeTypingIndicator(typingDiv);
-        addMessage('❌ عذراً، حدث خطأ في الاتصال. تأكد من مفتاح API أو اتصال الإنترنت.', 'bot');
-        console.error(error);
+        addMessage('❌ عذراً، حدث خطأ في الاتصال. تأكد من تشغيل الـ VPN أو صلاحية المفتاح.', 'bot');
+        console.error("Error Details:", error);
     }
 }
 
 async function callGeminiAPI(userMessage) {
-    const prompt = `أنت مساعد صيانة محترف خبير في جميع أنواع الصيانة (سيارات، أجهزة منزلية، كهرباء، هواتف، كمبيوتر). أجب بدقة واحترافية عن مشكلة العميل التالية:
-
+    // تجهيز النص الموجه للذكاء الاصطناعي
+    const promptText = `أنت مساعد صيانة محترف خبير في جميع أنواع الصيانة (سيارات، أجهزة منزلية، كهرباء، هواتف، كمبيوتر). أجب بدقة واحترافية عن مشكلة العميل التالية:
 المشكلة: ${userMessage}
-
 قدم الحل خطوة بخطوة بطريقة واضحة ومفيدة.`;
 
     const requestBody = {
         contents: [{
-            parts: [{ text: prompt }]
+            parts: [{ text: promptText }]
         }]
     };
 
-    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+    // التصحيح هنا: نستخدم API_URL مباشرة لأنه يحتوي على المفتاح من ملف config
+    const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -54,6 +52,8 @@ async function callGeminiAPI(userMessage) {
     });
 
     if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error Response:", errorData);
         throw new Error(`API error: ${response.status}`);
     }
 
@@ -66,10 +66,13 @@ function addMessage(text, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
     
-    // تحويل Markdown إلى HTML (للردود الجميلة)
     if (sender === 'bot') {
-        text = marked.parse(text);
-        messageDiv.innerHTML = text;
+        // تأكد من وجود مكتبة marked في ملف HTML لتنسيق الكلام
+        try {
+            messageDiv.innerHTML = marked.parse(text);
+        } catch (e) {
+            messageDiv.textContent = text;
+        }
     } else {
         messageDiv.textContent = text;
     }
@@ -83,14 +86,14 @@ function addTypingIndicator() {
     const typingDiv = document.createElement('div');
     typingDiv.className = 'message bot';
     typingDiv.id = 'typingIndicator';
-    typingDiv.innerHTML = '🤖 جاري التفكير';
+    typingDiv.innerHTML = '🤖 جاري التفكير في الحل...';
     chatBox.appendChild(typingDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
     return typingDiv;
 }
 
 function removeTypingIndicator(typingDiv) {
-    if (typingDiv && typingDiv.remove) {
+    if (typingDiv) {
         typingDiv.remove();
     }
 }
