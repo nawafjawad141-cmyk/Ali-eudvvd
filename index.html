@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مساعد الصيانة الذكي</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 مساعد الصيانة الذكي 🤖</h1>
+            <p>اسأل عن أي مشكلة في الأجهزة، السيارات، أو الكهرباء</p>
+        </header>
+
+        <div class="chat-box" id="chatBox">
+            <div class="message bot">
+                السلام عليكم! أنا مساعدك للصيانة. أخبرني عن المشكلة بالتفصيل.
+            </div>
+        </div>
+
+        <div class="input-area">
+            <textarea id="userInput" placeholder="اكتب مشكلتك هنا...  " rows="3"></textarea>
+            <button id="sendBtn">إرسال 🚀</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
